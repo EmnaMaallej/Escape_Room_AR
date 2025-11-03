@@ -46,7 +46,7 @@ cornerLampPositions.forEach(pos => {
     lampPost.position.set(pos[0], 1, pos[2]);
     lampPost.castShadow = true;
     scene.add(lampPost);
-    
+
     const lampShade = new THREE.Mesh(
         new THREE.ConeGeometry(0.3, 0.4, 16),
         new THREE.MeshStandardMaterial({
@@ -57,7 +57,7 @@ cornerLampPositions.forEach(pos => {
     );
     lampShade.position.set(pos[0], 2.3, pos[2]);
     scene.add(lampShade);
-    
+
     const lampLight = new THREE.PointLight(0xffaa66, 2.5, 12); // Increased from 1.5 to 2.5
     lampLight.position.set(pos[0], 2, pos[2]);
     scene.add(lampLight);
@@ -96,7 +96,7 @@ carpet.position.y = 0.01;
 scene.add(carpet);
 
 // Walls
-const wallMat = new THREE.MeshStandardMaterial({ 
+const wallMat = new THREE.MeshStandardMaterial({
     map: wallTexture,
     roughness: 0.8,
     side: THREE.DoubleSide
@@ -266,14 +266,14 @@ clockGroup.add(centerFinial);
     );
     column.position.set(x, 2.25, 0.22);
     clockGroup.add(column);
-    
+
     const capital = new THREE.Mesh(
         new THREE.BoxGeometry(0.13, 0.15, 0.13),
         brassAgedMat
     );
     capital.position.set(x, 4.25, 0.22);
     clockGroup.add(capital);
-    
+
     const base = new THREE.Mesh(
         new THREE.BoxGeometry(0.13, 0.15, 0.13),
         brassAgedMat
@@ -332,7 +332,7 @@ numeralPositions.forEach(({ text, angle }) => {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(text, 32, 32);
-    
+
     const texture = new THREE.CanvasTexture(canvas);
     const numeral = new THREE.Mesh(
         new THREE.PlaneGeometry(0.13, 0.13),
@@ -439,7 +439,7 @@ console.log('✅ Clock: shorter & wider!');
 // === UN SEUL TABLEAU (À CÔTÉ DE L'HORLOGE) - FIXED ===
 const painting = new THREE.Mesh(
     new THREE.PlaneGeometry(1.2, 1.6),
-    new THREE.MeshStandardMaterial({ 
+    new THREE.MeshStandardMaterial({
         map: paintingTexture,
         roughness: 0.5,           // Less rough for better texture visibility
         emissive: 0x333333,       // Add slight glow
@@ -454,10 +454,10 @@ scene.add(painting);
 // Cadre doré autour du tableau
 const frame = new THREE.Mesh(
     new THREE.BoxGeometry(1.3, 1.7, 0.08),
-    new THREE.MeshStandardMaterial({ 
-        color: 0xd4af37, 
-        metalness: 0.85, 
-        roughness: 0.25 
+    new THREE.MeshStandardMaterial({
+        color: 0xd4af37,
+        metalness: 0.85,
+        roughness: 0.25
     })
 );
 frame.position.set(5.88, 3, 2);
@@ -605,7 +605,7 @@ for (let i = 0; i < 6; i++) {
     scene.add(bulb);
 }
 
-// === PARTICLES ===
+// === PARTICLES ==
 const particleCount = 300;
 const positions = new Float32Array(particleCount * 3);
 for (let i = 0; i < particleCount * 3; i += 3) {
