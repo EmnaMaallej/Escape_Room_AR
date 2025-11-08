@@ -20,10 +20,10 @@ controls.enableDamping = true;
 controls.target.set(0, 2, 0);
 
 // === Lights (BRIGHTER) ===
-const ambientLight = new THREE.AmbientLight(0x3a3a5a, 0.8); // Increased from 0.4 to 0.8
+const ambientLight = new THREE.AmbientLight(0x3a3a5a, 0.8);
 scene.add(ambientLight);
 
-const chandelierLight = new THREE.PointLight(0xffd8b1, 5.5, 35); // Increased from 3.5 to 5.5
+const chandelierLight = new THREE.PointLight(0xffd8b1, 5.5, 35);
 chandelierLight.position.set(0, 5.5, 0);
 chandelierLight.castShadow = true;
 scene.add(chandelierLight);
@@ -52,13 +52,13 @@ cornerLampPositions.forEach(pos => {
         new THREE.MeshStandardMaterial({
             color: 0xffe4b5,
             emissive: 0xffaa66,
-            emissiveIntensity: 0.8 // Increased from 0.6
+            emissiveIntensity: 0.8
         })
     );
     lampShade.position.set(pos[0], 2.3, pos[2]);
     scene.add(lampShade);
 
-    const lampLight = new THREE.PointLight(0xffaa66, 2.5, 12); // Increased from 1.5 to 2.5
+    const lampLight = new THREE.PointLight(0xffaa66, 2.5, 12);
     lampLight.position.set(pos[0], 2, pos[2]);
     scene.add(lampLight);
 });
@@ -193,18 +193,18 @@ const keypad = new THREE.Mesh(
 keypad.position.set(1, 1.75, -5.87);
 scene.add(keypad);
 
-// === GRANDFATHER CLOCK (SHORTER & WIDER) ===
+// === GRANDFATHER CLOCK (DARK BROWN & WHITE CLOCK FACE) ===
 const clockGroup = new THREE.Group();
 
-// Wood materials
+// Wood materials - DARK BROWN
 const darkWoodMat = new THREE.MeshStandardMaterial({
-    color: 0x3d2817,
+    color: 0x2b1810,
     roughness: 0.6,
     metalness: 0.1
 });
 
 const lightWoodMat = new THREE.MeshStandardMaterial({
-    color: 0x5a3c1a,
+    color: 0x3d2415,
     roughness: 0.7,
     metalness: 0.2
 });
@@ -286,80 +286,89 @@ clockGroup.add(centerFinial);
 const upperCase = new THREE.Mesh(
     new THREE.BoxGeometry(1.3, 1.4, 0.45),
     new THREE.MeshStandardMaterial({
-        color: 0x4a3520,
+        color: 0x2a1a10,
         roughness: 0.65
     })
 );
 upperCase.position.y = 3.55;
 clockGroup.add(upperCase);
 
-// Clock face (bigger)
+// WHITE CLOCK FACE (cercle blanc plat)
 const clockFace = new THREE.Mesh(
-    new THREE.CircleGeometry(0.5, 32),
-    new THREE.MeshStandardMaterial({
-        color: 0xf0e6d2,
-        emissive: 0xffaa44,
-        emissiveIntensity: 0.1,
-        roughness: 0.8
+    new THREE.CircleGeometry(0.48, 32),
+    new THREE.MeshBasicMaterial({
+        color: 0xffffff
     })
 );
 clockFace.position.set(0, 3.55, 0.24);
 clockGroup.add(clockFace);
 
-// Brass bezel
-const bezel = new THREE.Mesh(
-    new THREE.TorusGeometry(0.5, 0.04, 16, 32),
-    brassAgedMat
+// CADRE DORÉ autour du cadran (bezel doré)
+const goldenBezel = new THREE.Mesh(
+    new THREE.TorusGeometry(0.48, 0.03, 16, 32),
+    new THREE.MeshStandardMaterial({
+        color: 0xd4af37,
+        metalness: 0.9,
+        roughness: 0.3
+    })
 );
-bezel.position.set(0, 3.55, 0.25);
-clockGroup.add(bezel);
+goldenBezel.position.set(0, 3.55, 0.25);
+clockGroup.add(goldenBezel);
 
-// Roman numerals
-const numeralPositions = [
-    { text: 'XII', angle: 0 },
-    { text: 'III', angle: Math.PI / 2 },
-    { text: 'VI', angle: Math.PI },
-    { text: 'IX', angle: -Math.PI / 2 }
+// TOUS LES CHIFFRES 1-12
+const numbers = [
+    { text: '12', angle: 0 },
+    { text: '1', angle: Math.PI / 6 },
+    { text: '2', angle: Math.PI / 3 },
+    { text: '3', angle: Math.PI / 2 },
+    { text: '4', angle: 2 * Math.PI / 3 },
+    { text: '5', angle: 5 * Math.PI / 6 },
+    { text: '6', angle: Math.PI },
+    { text: '7', angle: 7 * Math.PI / 6 },
+    { text: '8', angle: 4 * Math.PI / 3 },
+    { text: '9', angle: 3 * Math.PI / 2 },
+    { text: '10', angle: 5 * Math.PI / 3 },
+    { text: '11', angle: 11 * Math.PI / 6 }
 ];
 
-numeralPositions.forEach(({ text, angle }) => {
+numbers.forEach(({ text, angle }) => {
     const canvas = document.createElement('canvas');
     canvas.width = 64;
     canvas.height = 64;
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#2a1810';
-    ctx.font = 'bold 32px Georgia';
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 28px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(text, 32, 32);
 
     const texture = new THREE.CanvasTexture(canvas);
     const numeral = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.13, 0.13),
+        new THREE.PlaneGeometry(0.12, 0.12),
         new THREE.MeshBasicMaterial({ map: texture, transparent: true })
     );
     numeral.position.set(
-        Math.sin(angle) * 0.35,
-        3.55 + Math.cos(angle) * 0.35,
+        Math.sin(angle) * 0.36,
+        3.55 + Math.cos(angle) * 0.36,
         0.26
     );
     clockGroup.add(numeral);
 });
 
-// Hour hand
+// Hour hand (BLACK)
 const hourHand = new THREE.Mesh(
-    new THREE.BoxGeometry(0.04, 0.24, 0.015),
-    brassAgedMat
+    new THREE.BoxGeometry(0.04, 0.22, 0.015),
+    new THREE.MeshBasicMaterial({ color: 0x000000 })
 );
-hourHand.position.set(0, 3.67, 0.27);
+hourHand.position.set(0, 3.66, 0.27);
 clockGroup.add(hourHand);
 
-// Minute hand
+// Minute hand (BLACK)
 const minuteHand = new THREE.Mesh(
-    new THREE.BoxGeometry(0.03, 0.34, 0.015),
-    brassAgedMat
+    new THREE.BoxGeometry(0.03, 0.32, 0.015),
+    new THREE.MeshBasicMaterial({ color: 0x000000 })
 );
-minuteHand.position.set(0, 3.72, 0.27);
+minuteHand.position.set(0, 3.71, 0.27);
 clockGroup.add(minuteHand);
 
 // Glass door
@@ -434,46 +443,74 @@ clockGroup.position.set(5.65, 0, -2);
 clockGroup.rotation.y = -Math.PI / 2;
 scene.add(clockGroup);
 
-console.log('✅ Clock: shorter & wider!');
+console.log('✅ Clock: perfect white face with golden bezel and all numbers!');
 
-// === UN SEUL TABLEAU (À CÔTÉ DE L'HORLOGE) - FIXED ===
+// === PAINTING (SANS LUMIÈRE) ===
 const painting = new THREE.Mesh(
     new THREE.PlaneGeometry(1.2, 1.6),
     new THREE.MeshStandardMaterial({
         map: paintingTexture,
-        roughness: 0.5,           // Less rough for better texture visibility
-        emissive: 0x333333,       // Add slight glow
-        emissiveIntensity: 0.3    // Helps texture show in dark areas
+        roughness: 0.3,
+        emissive: 0xffffff,
+        emissiveIntensity: 0.15
     })
 );
-painting.position.set(5.9, 3, 2);
+painting.position.set(5.85, 3, 2);
 painting.rotation.y = -Math.PI / 2;
 painting.castShadow = true;
 scene.add(painting);
 
-// Cadre doré autour du tableau
-const frame = new THREE.Mesh(
-    new THREE.BoxGeometry(1.3, 1.7, 0.08),
-    new THREE.MeshStandardMaterial({
-        color: 0xd4af37,
-        metalness: 0.85,
-        roughness: 0.25
-    })
-);
-frame.position.set(5.88, 3, 2);
-frame.rotation.y = -Math.PI / 2;
-frame.castShadow = true;
-scene.add(frame);
-
-// Lampe pour éclairer le tableau (MUCH BRIGHTER)
-const paintingLight = new THREE.SpotLight(0xffaa66, 4.0, 8, Math.PI / 6); // Increased from 1.2 to 4.0
-paintingLight.position.set(5.6, 4.5, 2);
-paintingLight.target.position.set(5.9, 3, 2);
-paintingLight.castShadow = true;
-scene.add(paintingLight);
-scene.add(paintingLight.target);
-
 console.log('✅ Tableau ajouté avec votre image!');
+
+// === FAUTEUIL NOIR SOUS LE TABLEAU ===
+const armchairGroup = new THREE.Group();
+
+// Siège
+const armchairSeat = new THREE.Mesh(
+    new THREE.BoxGeometry(0.8, 0.15, 0.8),
+    new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 })
+);
+armchairSeat.position.y = 0.5;
+armchairGroup.add(armchairSeat);
+
+// Dossier
+const armchairBack = new THREE.Mesh(
+    new THREE.BoxGeometry(0.8, 0.7, 0.15),
+    new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 })
+);
+armchairBack.position.set(0, 0.85, -0.325);
+armchairGroup.add(armchairBack);
+
+// Accoudoirs (gauche et droite)
+[-0.4, 0.4].forEach(x => {
+    const armrest = new THREE.Mesh(
+        new THREE.BoxGeometry(0.12, 0.5, 0.6),
+        new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.8 })
+    );
+    armrest.position.set(x, 0.65, 0);
+    armchairGroup.add(armrest);
+});
+
+// Pieds (4 pieds)
+[
+    [-0.3, -0.3], [0.3, -0.3],
+    [-0.3, 0.3], [0.3, 0.3]
+].forEach(([x, z]) => {
+    const leg = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.04, 0.04, 0.5, 8),
+        new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.5 })
+    );
+    leg.position.set(x, 0.25, z);
+    armchairGroup.add(leg);
+});
+
+// Positionner le fauteuil sous le tableau
+armchairGroup.position.set(5.2, 0, 2);
+armchairGroup.rotation.y = Math.PI / 2;
+armchairGroup.castShadow = true;
+scene.add(armchairGroup);
+
+console.log('✅ Fauteuil noir ajouté sous le tableau!');
 
 // === BOOKSHELVES ===
 const bookshelf1 = new THREE.Mesh(
@@ -528,7 +565,7 @@ note.rotation.x = -Math.PI / 2;
 note.position.set(-4, 1.07, 5);
 scene.add(note);
 
-// Desk lamp (BRIGHTER)
+// Desk lamp
 const deskLampStand = new THREE.Mesh(
     new THREE.CylinderGeometry(0.04, 0.06, 0.5, 16),
     new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9 })
@@ -541,13 +578,13 @@ const deskLampShade = new THREE.Mesh(
     new THREE.MeshStandardMaterial({
         color: 0xffe4b5,
         emissive: 0xffaa66,
-        emissiveIntensity: 0.7 // Increased from 0.5
+        emissiveIntensity: 0.7
     })
 );
 deskLampShade.position.set(-4.8, 1.7, 5);
 scene.add(deskLampShade);
 
-const deskLampLight = new THREE.SpotLight(0xffaa66, 2.5, 10, Math.PI / 6); // Increased from 1.5
+const deskLampLight = new THREE.SpotLight(0xffaa66, 2.5, 10, Math.PI / 6);
 deskLampLight.position.set(-4.8, 1.7, 5);
 deskLampLight.target.position.set(-4, 1, 5);
 scene.add(deskLampLight);
@@ -598,14 +635,14 @@ for (let i = 0; i < 6; i++) {
         new THREE.MeshStandardMaterial({
             color: 0xffffff,
             emissive: 0xffd8b1,
-            emissiveIntensity: 1.5 // Increased from 1.2
+            emissiveIntensity: 1.5
         })
     );
     bulb.position.set(Math.cos(angle) * 0.6, 4.9, Math.sin(angle) * 0.6);
     scene.add(bulb);
 }
 
-// === PARTICLES ==
+// === PARTICLES ===
 const particleCount = 300;
 const positions = new Float32Array(particleCount * 3);
 for (let i = 0; i < particleCount * 3; i += 3) {
@@ -625,12 +662,12 @@ function animate() {
     requestAnimationFrame(animate);
     time += 0.01;
 
-    chandelierLight.intensity = 5.5 + Math.sin(time * 2) * 0.8; // Adjusted for brighter baseline
+    chandelierLight.intensity = 5.5 + Math.sin(time * 2) * 0.8;
     keypad.material.emissiveIntensity = 0.7 + Math.sin(time * 3) * 0.3;
     gearBox.rotation.y += 0.005;
 
-    hourHand.rotation.z += 0.0001;
-    minuteHand.rotation.z += 0.001;
+    hourHand.rotation.z += 0.00002;
+    minuteHand.rotation.z += 0.0002;
     pendulum.rotation.z = Math.sin(time * 1.8) * 0.12;
 
     particles.rotation.y += 0.0002;
