@@ -11,13 +11,13 @@ export class DoorLockPuzzle {
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
 
-        this.secretCode = options.code || '4271';
+        this.secretCode = options.code || '4619';
         this.inputCode = '';
         this.solved = false;
         this.opening = false;
         this.openProgress = 0;
 
-        this.onUnlocked = options.onUnlocked || (() => {});
+        this.onUnlocked = options.onUnlocked || (() => { });
 
         this.createUI();
         this.setupEvents();

@@ -4,6 +4,8 @@ import { GearPuzzle } from './puzzles/puzzle2.js';
 import { BookPuzzle } from './puzzles/puzzle3.js';
 import { DoorLockPuzzle } from './puzzles/lock.js';
 
+
+
 // === Scene Setup ===
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x050510);
@@ -1087,13 +1089,45 @@ for (let i = 0; i < 6; i++) {
 }
 
 // === Puzzle 2 Box (GearPuzzle) ===
+let puzzle3 = null; // Déclaration pour Puzzle 3
+
 const puzzle2 = new GearPuzzle(scene, camera, renderer, puzzle1, {
-    onSolved: () => {
-        console.log(
-            '📖 Puzzle 2 solved – logbook ready for the symbol door puzzle.'
-        );
+    onSolved: (bookMesh) => {
+        console.log('📖 Puzzle 2 solved – logbook ready!');
+
+        // Initialiser Puzzle 3 quand le livre apparaît
+        if (bookMesh && !puzzle3) {
+            puzzle3 = new BookPuzzle(scene, camera, renderer, bookMesh, true);
+            console.log('📚 Book Puzzle created and opened IMMEDIATELY!');
+        }
     }
 });
+
+// === Puzzle 4 - Door Lock ===
+const puzzle4 = new DoorLockPuzzle(scene, camera, renderer, door, keypad, {
+    code: '4619',
+    onUnlocked: () => {
+        console.log('🎉 ESCAPE SUCCESSFUL!');
+
+        const victoryDiv = document.createElement('div');
+        victoryDiv.style.position = 'fixed';
+        victoryDiv.style.top = '50%';
+        victoryDiv.style.left = '50%';
+        victoryDiv.style.transform = 'translate(-50%, -50%)';
+        victoryDiv.style.padding = '30px';
+        victoryDiv.style.background = 'rgba(0,0,0,0.95)';
+        victoryDiv.style.color = '#00ff00';
+        victoryDiv.style.fontSize = '32px';
+        victoryDiv.style.fontFamily = 'Georgia, serif';
+        victoryDiv.style.borderRadius = '15px';
+        victoryDiv.style.border = '3px solid #00ff00';
+        victoryDiv.style.zIndex = '5000';
+        victoryDiv.textContent = '🎉 YOU ESCAPED! 🎉';
+        document.body.appendChild(victoryDiv);
+    }
+});
+
+console.log('✅ All puzzles initialized!');
 
 // === Animation Loop ===
 const clock = new THREE.Clock();
