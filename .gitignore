@@ -39,3 +39,18 @@ package.json
 *.tmp
 *.temp
 .cache/
+
+# Assets - Models and Textures
+# (These will be downloaded via script)
+public/models/
+src/textures/*.jpg
+src/textures/*.png
+src/textures/*.jpeg
+src/textures/*.webp
+*.glb
+*.gltf
+*.usdz
+*.fbx
+*.obj
+*.dae
+*.3ds
