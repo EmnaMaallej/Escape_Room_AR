@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="A VR Escape Room Experience">
+    <link rel="manifest" href="./manifest.json">
     <title>Mysterious Room</title>
     <style>
         * {
@@ -20,7 +23,14 @@
 </head>
 
 <body>
-    <script type="module" src="/main.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(() => console.log('Service Worker Registered'))
+                .catch((err) => console.error('Service Worker Failed', err));
+        }
+    </script>
+    <script type="module" src="./src/main.js"></script>
 </body>
 
 </html>
