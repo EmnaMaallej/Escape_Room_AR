@@ -11,6 +11,7 @@ export class ClockPuzzle {
 
         this.solved = false;
         this.selectedHand = null;
+        this.hasInteracted = false; // Ne vérifie pas avant interaction
 
         this.gear = null;
         this.gearLight = null;
@@ -29,7 +30,7 @@ export class ClockPuzzle {
         this.setupEventListeners();
 
         console.log('Puzzle 1 – Clock Alignment activated.');
-        console.log('   - Click a hand to select it.');
+        console.log('   - Press 1 to select hour hand, 2 for minute hand');
         console.log('   - Use ← → or 4 / 6 to rotate.');
         console.log('   - The hint near the clock speaks of dawn and balance...');
     }
@@ -73,7 +74,7 @@ export class ClockPuzzle {
             })
         );
 
-        stickyNote.position.set(5.7, 2.2, -2.5);
+        stickyNote.position.set(5.7, 2.2, -4);
         stickyNote.rotation.y = -Math.PI / 2;
         stickyNote.castShadow = true;
 
@@ -81,23 +82,26 @@ export class ClockPuzzle {
     }
 
     checkClockTime() {
-        if (this.solved) return;
+        if (this.solved || !this.hasInteracted) return;
 
-        // Heure actuelle des groupes (en degrés)
-        const hourAngle = THREE.MathUtils.radToDeg(this.hourHand.rotation.z) % 360;
-        const minuteAngle = THREE.MathUtils.radToDeg(this.minuteHand.rotation.z) % 360;
+        // Rotation sur l'axe Z
+        let hourAngle = THREE.MathUtils.radToDeg(this.hourHand.rotation.z) % 360;
+        let minuteAngle = THREE.MathUtils.radToDeg(this.minuteHand.rotation.z) % 360;
 
-        // Target: 6:00 symbolique
-        // - heure vers le bas (180°)
-        // - minute vers le haut (0°)
+        if (hourAngle < 0) hourAngle += 360;
+        if (minuteAngle < 0) minuteAngle += 360;
+
+        console.log('Angles - Hour:', hourAngle.toFixed(1), 'Minute:', minuteAngle.toFixed(1));
+
+        // Target: 6:00
         const hourTarget = 180;
         const minuteTarget = 0;
         const tolerance = 15;
 
-        const hourCorrect = Math.abs(((hourAngle + 360) % 360) - hourTarget) < tolerance;
-        const minuteCorrect = Math.abs(((minuteAngle + 360) % 360) - minuteTarget) < tolerance;
+        const hourDiff = Math.abs(hourAngle - hourTarget);
+        const minuteDiff = Math.min(minuteAngle, 360 - minuteAngle);
 
-        if (hourCorrect && minuteCorrect) {
+        if (hourDiff < tolerance && minuteDiff < tolerance) {
             this.solvePuzzle();
         }
     }
@@ -119,7 +123,7 @@ export class ClockPuzzle {
         });
 
         this.gear = new THREE.Mesh(gearGeom, gearMat);
-        this.gear.position.set(5.0, 3.4, -2.0); // commence sous le cadran
+        this.gear.position.set(5.0, 3.4, -3.5); // commence sous le cadran
         this.gear.rotation.x = Math.PI / 2;
         this.gear.castShadow = true;
         this.scene.add(this.gear);
@@ -131,8 +135,8 @@ export class ClockPuzzle {
 
         // Spot vers le sol
         this.floorLight = new THREE.SpotLight(0xFFAA00, 3.0, 8, Math.PI / 6);
-        this.floorLight.position.set(5.0, 2.0, -2.0);
-        this.floorLight.target.position.set(5.0, 0.0, -2.0);
+        this.floorLight.position.set(5.0, 2.0, -3.5);
+        this.floorLight.target.position.set(5.0, 0.0, -3.5);
         this.scene.add(this.floorLight, this.floorLight.target);
 
         // Animation de chute simple
@@ -204,6 +208,7 @@ export class ClockPuzzle {
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
         const hitMeshes = [];
+        // Traverse pivot groups to find meshes
         this.hourHand.traverse((child) => {
             if (child.isMesh) hitMeshes.push(child);
         });
@@ -211,11 +216,17 @@ export class ClockPuzzle {
             if (child.isMesh) hitMeshes.push(child);
         });
 
+        console.log('🖱️ Clock click - found meshes:', hitMeshes.length);
+
         const intersects = this.raycaster.intersectObjects(hitMeshes, false);
+        console.log('🎯 Intersects:', intersects.length);
+
         if (!intersects.length) return;
 
         const hit = intersects[0].object;
+        console.log('✅ Hit object:', hit.name);
 
+        // Check if hit is child of hour or minute pivot
         if (this.isChildOf(hit, this.hourHand)) {
             this.selectedHand = 'hour';
             this.showMessage('🕐 Hour hand selected. Use ← → or 4 / 6.');
@@ -253,15 +264,33 @@ export class ClockPuzzle {
     };
 
     onKeyDown = (event) => {
-        if (this.solved || !this.selectedHand) return;
+        if (this.solved) return;
+
+        // Sélection des aiguilles avec 1 et 2
+        if (event.key === '1') {
+            this.selectedHand = 'hour';
+            this.showMessage('🕐 Hour hand selected. Use ← → or 4 / 6.');
+            return;
+        }
+        if (event.key === '2') {
+            this.selectedHand = 'minute';
+            this.showMessage('🕐 Minute hand selected. Use ← → or 4 / 6.');
+            return;
+        }
+
+        if (!this.selectedHand) return;
 
         const rotationSpeed = Math.PI / 12; // 15°
+        this.hasInteracted = true;
 
+        // Essayer rotation.z (axe perpendiculaire au cadran dans le modèle)
         if (event.key === '6' || event.key === 'ArrowRight') {
             if (this.selectedHand === 'hour') {
                 this.hourHand.rotation.z -= rotationSpeed;
+                console.log('Hour Z:', this.hourHand.rotation.z.toFixed(2));
             } else {
                 this.minuteHand.rotation.z -= rotationSpeed;
+                console.log('Minute Z:', this.minuteHand.rotation.z.toFixed(2));
             }
             this.checkClockTime();
             event.preventDefault();
@@ -269,19 +298,17 @@ export class ClockPuzzle {
         } else if (event.key === '4' || event.key === 'ArrowLeft') {
             if (this.selectedHand === 'hour') {
                 this.hourHand.rotation.z += rotationSpeed;
+                console.log('Hour Z:', this.hourHand.rotation.z.toFixed(2));
             } else {
                 this.minuteHand.rotation.z += rotationSpeed;
+                console.log('Minute Z:', this.minuteHand.rotation.z.toFixed(2));
             }
             this.checkClockTime();
             event.preventDefault();
             event.stopPropagation();
-        } else if (
-            event.key === 'Escape' ||
-            event.key === 'e' ||
-            event.key === 'E'
-        ) {
+        } else if (event.key === 'Escape' || event.key === 'e' || event.key === 'E') {
             this.selectedHand = null;
-            this.showMessage('Hand deselected. Click again to select.');
+            this.showMessage('Hand deselected.');
         }
     };
 
