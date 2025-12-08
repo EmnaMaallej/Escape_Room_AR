@@ -20,7 +20,7 @@ const camera = new THREE.PerspectiveCamera(
     0.1,
     1000
 );
-camera.position.set(0, 1.7, 5);
+camera.position.set(0, 2.2, 5);
 camera.rotation.order = 'YXZ';
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -135,7 +135,7 @@ function updateMovement() {
 
     camera.position.x = Math.max(-5.5, Math.min(5.5, camera.position.x));
     camera.position.z = Math.max(-5.5, Math.min(5.5, camera.position.z));
-    camera.position.y = 1.7;
+    camera.position.y = 2.2;
 }
 
 console.log('✅ FPS controls ready');
@@ -307,7 +307,6 @@ function createBaroqueMoldings() {
     ];
 
     corniches.forEach(({ pos, rot, len }) => {
-        // Corniche dorée
         const corniche = new THREE.Mesh(
             new THREE.BoxGeometry(len, 0.15, 0.25),
             goldMoldingMat
@@ -316,7 +315,6 @@ function createBaroqueMoldings() {
         corniche.rotation.set(rot[0], rot[1], rot[2]);
         scene.add(corniche);
 
-        // Moulure basse
         const lowerMolding = new THREE.Mesh(
             new THREE.BoxGeometry(len, 0.08, 0.18),
             darkMoldingMat
@@ -329,7 +327,6 @@ function createBaroqueMoldings() {
     // Médaillon central au plafond
     const medallion = new THREE.Group();
 
-    // Cercle extérieur orné
     const outerRing = new THREE.Mesh(
         new THREE.TorusGeometry(1.2, 0.08, 16, 48),
         goldMoldingMat
@@ -337,7 +334,6 @@ function createBaroqueMoldings() {
     outerRing.rotation.x = Math.PI / 2;
     medallion.add(outerRing);
 
-    // Cercle intérieur
     const innerRing = new THREE.Mesh(
         new THREE.TorusGeometry(0.7, 0.05, 16, 32),
         goldMoldingMat
@@ -345,7 +341,6 @@ function createBaroqueMoldings() {
     innerRing.rotation.x = Math.PI / 2;
     medallion.add(innerRing);
 
-    // Rosace centrale
     for (let i = 0; i < 12; i++) {
         const angle = (i / 12) * Math.PI * 2;
         const petal = new THREE.Mesh(
@@ -373,7 +368,6 @@ function createBaroqueMoldings() {
     ];
 
     plinthes.forEach(({ pos, rot, len }) => {
-        // Plinthe haute
         const plinthe = new THREE.Mesh(
             new THREE.BoxGeometry(len, 0.18, 0.12),
             darkMoldingMat
@@ -382,7 +376,6 @@ function createBaroqueMoldings() {
         plinthe.rotation.y = rot;
         scene.add(plinthe);
 
-        // Liseré doré
         const goldTrim = new THREE.Mesh(
             new THREE.BoxGeometry(len, 0.03, 0.13),
             goldMoldingMat
@@ -411,7 +404,6 @@ const tableDarkWood = new THREE.MeshStandardMaterial({
     metalness: 0.1
 });
 
-// Plateau de la table avec bord doré
 const centerTableTop = new THREE.Mesh(
     new THREE.CylinderGeometry(2, 2, 0.12, 48),
     tableDarkWood
@@ -420,7 +412,6 @@ centerTableTop.position.y = 1;
 centerTableTop.castShadow = true;
 centerTableGroup.add(centerTableTop);
 
-// Bordure dorée du plateau
 const tableRim = new THREE.Mesh(
     new THREE.TorusGeometry(2.02, 0.04, 12, 48),
     tableGold
@@ -429,7 +420,6 @@ tableRim.rotation.x = Math.PI / 2;
 tableRim.position.y = 1.06;
 centerTableGroup.add(tableRim);
 
-// Motif central gravé sur le plateau
 const tableInlay = new THREE.Mesh(
     new THREE.RingGeometry(0.3, 0.8, 32),
     tableGold
@@ -438,7 +428,6 @@ tableInlay.rotation.x = -Math.PI / 2;
 tableInlay.position.y = 1.07;
 centerTableGroup.add(tableInlay);
 
-// Pied central sculpté
 const centerTableLeg = new THREE.Mesh(
     new THREE.CylinderGeometry(0.35, 0.5, 0.9, 16),
     tableDarkWood
@@ -447,7 +436,6 @@ centerTableLeg.position.y = 0.45;
 centerTableLeg.castShadow = true;
 centerTableGroup.add(centerTableLeg);
 
-// Ornements sur le pied
 for (let i = 0; i < 4; i++) {
     const ang = (i / 4) * Math.PI * 2;
     const legOrnament = new THREE.Mesh(
@@ -462,7 +450,6 @@ for (let i = 0; i < 4; i++) {
     centerTableGroup.add(legOrnament);
 }
 
-// Base sculptée
 const tableBase = new THREE.Mesh(
     new THREE.CylinderGeometry(0.6, 0.7, 0.15, 16),
     tableDarkWood
@@ -470,7 +457,6 @@ const tableBase = new THREE.Mesh(
 tableBase.position.y = 0.075;
 centerTableGroup.add(tableBase);
 
-// Pieds griffes dorés
 for (let i = 0; i < 4; i++) {
     const ang = (i / 4) * Math.PI * 2 + Math.PI / 4;
     const clawFoot = new THREE.Mesh(
@@ -499,7 +485,6 @@ const candelabraBase = new THREE.Mesh(
 candelabraBase.position.y = 1.18;
 candelabraGroup.add(candelabraBase);
 
-// Tige centrale ornée
 const candelabraStem = new THREE.Mesh(
     new THREE.CylinderGeometry(0.05, 0.06, 0.5, 12),
     tableGold
@@ -507,7 +492,6 @@ const candelabraStem = new THREE.Mesh(
 candelabraStem.position.y = 1.6;
 candelabraGroup.add(candelabraStem);
 
-// Anneaux décoratifs
 [1.4, 1.55, 1.7].forEach(y => {
     const ring = new THREE.Mesh(
         new THREE.TorusGeometry(0.07, 0.015, 8, 16),
@@ -521,7 +505,6 @@ candelabraGroup.add(candelabraStem);
 for (let i = 0; i < 5; i++) {
     const ang = (i / 5) * Math.PI * 2;
 
-    // Bras
     const armLength = 0.25;
     const arm = new THREE.Mesh(
         new THREE.CylinderGeometry(0.02, 0.025, armLength, 8),
@@ -532,7 +515,6 @@ for (let i = 0; i < 5; i++) {
     arm.rotation.y = ang;
     candelabraGroup.add(arm);
 
-    // Coupelle
     const cup = new THREE.Mesh(
         new THREE.CylinderGeometry(0.06, 0.045, 0.04, 12),
         tableGold
@@ -540,7 +522,6 @@ for (let i = 0; i < 5; i++) {
     cup.position.set(Math.cos(ang) * 0.3, 1.85, Math.sin(ang) * 0.3);
     candelabraGroup.add(cup);
 
-    // Bougie
     const candle = new THREE.Mesh(
         new THREE.CylinderGeometry(0.025, 0.03, 0.12, 12),
         new THREE.MeshStandardMaterial({ color: 0xfff8dc })
@@ -548,7 +529,6 @@ for (let i = 0; i < 5; i++) {
     candle.position.set(Math.cos(ang) * 0.3, 1.93, Math.sin(ang) * 0.3);
     candelabraGroup.add(candle);
 
-    // Flamme
     const flame = new THREE.Mesh(
         new THREE.SphereGeometry(0.035, 8, 8),
         new THREE.MeshStandardMaterial({
@@ -678,7 +658,7 @@ const papersLight = new THREE.PointLight(0xfff2cc, 0.6, 2.2);
 papersLight.position.set(0.85, 1.8, -0.35);
 scene.add(papersLight);
 
-// Hover (visuel seulement)
+// Hover
 const paperRaycaster = new THREE.Raycaster();
 const paperMouse = new THREE.Vector2();
 let paperExpanded = false;
@@ -709,42 +689,69 @@ function updateHover() {
     }
 }
 
-// (si tu veux réactiver l’agrandissement, tu peux remettre un listener click ici)
+// === Door (imported GLB) ===
+let door = null;
 
-// === Door & Keypad placeholder ===
-const door = new THREE.Mesh(
-    new THREE.BoxGeometry(1.8, 3.5, 0.15),
-    new THREE.MeshStandardMaterial({ color: 0x1a0f08, roughness: 0.6 })
+gltfLoader.load(
+    '/models/door__wooden_18_mb.glb',
+    (gltf) => {
+        door = gltf.scene;
+        door.position.set(0, 2, -5.9);
+        door.rotation.y = 0;
+        door.scale.set(0.7, 0.6, 0.5);
+
+        door.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
+
+        scene.add(door);
+        console.log('✅ Door loaded');
+        initDoorPuzzle();
+    },
+    undefined,
+    (error) => console.error('❌ Error loading door:', error)
 );
-door.position.set(0, 1.75, -5.92);
-door.castShadow = true;
-scene.add(door);
 
-const keypad = new THREE.Mesh(
-    new THREE.BoxGeometry(0.3, 0.4, 0.08),
-    new THREE.MeshStandardMaterial({ color: 0x111111 })
+// === Security Pin Pad (imported GLB) ===
+let keypad = null;
+
+gltfLoader.load(
+    '/models/security_pin_pad.glb',
+    (gltf) => {
+        keypad = gltf.scene;
+        keypad.position.set(2.8, 2, -5.85);
+        keypad.rotation.y = 0;
+        keypad.scale.set(0.04, 0.04, 0.04);
+
+        keypad.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
+
+        scene.add(keypad);
+        console.log('✅ Security Pin Pad loaded');
+        initDoorPuzzle();
+    },
+    undefined,
+    (error) => console.error('❌ Error loading keypad:', error)
 );
-keypad.position.set(1, 1.75, -5.87);
-scene.add(keypad);
-
 
 // === Grandfather Clock (imported GLB with custom hands) ===
 const clockGroup = new THREE.Group();
 
-// Variables for clock hands - will be set when model loads
 let hourHand = null;
 let minuteHand = null;
 let puzzle1 = null;
 
-console.log('🔴🔴🔴 CLOCK CODE V4 🔴🔴🔴');
-
-// Load the grandfather clock model with separate hands
 gltfLoader.load(
     '/models/grandfather_clock.glb',
     (gltf) => {
         const clockModel = gltf.scene;
-
-        // Scale to fit room
         clockModel.scale.set(2.2, 2.2, 2.2);
         clockModel.position.set(0, 2.2, 0);
 
@@ -757,51 +764,24 @@ gltfLoader.load(
                 child.castShadow = true;
                 child.receiveShadow = true;
             }
-
-            if (child.name === 'MinuteHand_GR') {
-                minuteHandNode = child;
-            }
-            if (child.name === 'HourHand_GR') {
-                hourHandNode = child;
-            }
-            if (child.name === 'HandPin_GR') {
-                handPinNode = child;
-            }
+            if (child.name === 'MinuteHand_GR') minuteHandNode = child;
+            if (child.name === 'HourHand_GR') hourHandNode = child;
+            if (child.name === 'HandPin_GR') handPinNode = child;
         });
 
-        console.log('=== CLOCK SETUP V4 ===');
-
         if (hourHandNode && minuteHandNode && handPinNode) {
-            console.log('All parts found!');
-
-            // Le centre de rotation est la position du HandPin
             const pinPos = handPinNode.position.clone();
-            console.log('HandPin pos:', pinPos.x, pinPos.y, pinPos.z);
-            console.log('HourHand pos:', hourHandNode.position.x, hourHandNode.position.y, hourHandNode.position.z);
-
-            // Déplacer les aiguilles pour que leur position soit au centre du cadran
-            // Pour l'aiguille des heures
             const hourOffset = hourHandNode.position.clone().sub(pinPos);
             hourHandNode.position.copy(pinPos);
-            hourHandNode.children.forEach(child => {
-                child.position.add(hourOffset);
-            });
+            hourHandNode.children.forEach(child => child.position.add(hourOffset));
 
-            // Pour l'aiguille des minutes
             const minuteOffset = minuteHandNode.position.clone().sub(pinPos);
             minuteHandNode.position.copy(pinPos);
-            minuteHandNode.children.forEach(child => {
-                child.position.add(minuteOffset);
-            });
-
-            console.log('Hour offset applied:', hourOffset.x, hourOffset.y, hourOffset.z);
+            minuteHandNode.children.forEach(child => child.position.add(minuteOffset));
 
             hourHand = hourHandNode;
             minuteHand = minuteHandNode;
-
-            console.log('✅ Hands repositioned to center');
         } else {
-            console.error('Missing parts - Hour:', !!hourHandNode, 'Minute:', !!minuteHandNode, 'Pin:', !!handPinNode);
             hourHand = hourHandNode;
             minuteHand = minuteHandNode;
         }
@@ -848,9 +828,8 @@ gltfLoader.load(
     '/models/victorian_lounge_sofa.glb',
     (gltf) => {
         const sofa = gltf.scene;
-        // Position under the painting
         sofa.position.set(5.45, 1, 2);
-        sofa.rotation.y = Math.PI; // Back against the wall
+        sofa.rotation.y = Math.PI;
         sofa.scale.set(3, 3, 3);
 
         sofa.traverse((child) => {
@@ -861,14 +840,10 @@ gltfLoader.load(
         });
 
         scene.add(sofa);
-        console.log('✅ Victorian sofa loaded at:', sofa.position);
+        console.log('✅ Victorian sofa loaded');
     },
-    (progress) => {
-        console.log('Sofa loading:', (progress.loaded / progress.total * 100).toFixed(2) + '%');
-    },
-    (error) => {
-        console.error('❌ Error loading sofa:', error);
-    }
+    undefined,
+    (error) => console.error('❌ Error loading sofa:', error)
 );
 
 // === Victorian Bookshelf (imported GLB) ===
@@ -876,10 +851,8 @@ gltfLoader.load(
     '/models/victorian_bookshelf.glb',
     (gltf) => {
         const bookshelf = gltf.scene;
-        // Position centered on the south wall, covering the full width
         bookshelf.position.set(0, 0, 5.5);
-        bookshelf.rotation.y = Math.PI / 2; // 90 degrees - books facing the room
-        // Large scale to cover the full wall width and height
+        bookshelf.rotation.y = Math.PI / 2;
         bookshelf.scale.set(6, 3, 3);
 
         bookshelf.traverse((child) => {
@@ -890,28 +863,20 @@ gltfLoader.load(
         });
 
         scene.add(bookshelf);
-        console.log('✅ Victorian bookshelf loaded at:', bookshelf.position);
+        console.log('✅ Victorian bookshelf loaded');
     },
-    (progress) => {
-        console.log('Bookshelf loading:', (progress.loaded / progress.total * 100).toFixed(2) + '%');
-    },
-    (error) => {
-        console.error('❌ Error loading bookshelf:', error);
-    }
+    undefined,
+    (error) => console.error('❌ Error loading bookshelf:', error)
 );
 
-
-// === Antique Desk (imported GLB) ===
+// === Antique Desk (imported GLB) - SMALLER ===
 gltfLoader.load(
     '/models/antique_desk.glb',
     (gltf) => {
         const antiqueDesk = gltf.scene;
-        // Position in the LEFT corner near bookshelf, back against bookshelf
-        antiqueDesk.position.set(-5, 1.5, 2);
-        // Rotate to face the door (north)
+        antiqueDesk.position.set(-5, 1.5, 4);
         antiqueDesk.rotation.y = Math.PI / 2;
-        // Reasonable scale
-        antiqueDesk.scale.set(2.5, 1.6, 1);
+        antiqueDesk.scale.set(1.8, 1.3, 0.7); // Taille équilibrée
 
         antiqueDesk.traverse((child) => {
             if (child.isMesh) {
@@ -921,32 +886,26 @@ gltfLoader.load(
         });
 
         scene.add(antiqueDesk);
-        console.log('✅ Antique desk loaded at:', antiqueDesk.position);
+        console.log('✅ Antique desk loaded');
 
-        // Spotlight on desk
         const deskSpot = new THREE.SpotLight(0xffd8b1, 2.5, 6, Math.PI / 5);
         deskSpot.position.set(-4, 4, 4);
         deskSpot.target.position.set(-4, 1, 4.5);
         deskSpot.castShadow = true;
         scene.add(deskSpot, deskSpot.target);
     },
-    (progress) => {
-        console.log('Antique desk loading:', (progress.loaded / progress.total * 100).toFixed(2) + '%');
-    },
-    (error) => {
-        console.error('❌ Error loading antique desk:', error);
-    }
+    undefined,
+    (error) => console.error('❌ Error loading antique desk:', error)
 );
 
-// Note removed - desk model has its own decorations
-
-// === BAROQUE ENHANCEMENTS & RIDDLE DECORATIONS ===
-
+// === Magic Mirror (imported GLB) - REPOSITIONED ===
 gltfLoader.load(
     '/models/magic_mirror.glb',
     (gltf) => {
-
         const mirror = gltf.scene;
+        mirror.scale.set(0.015, 0.015, 0.01);
+        mirror.position.set(-5.8, 0.3, 1); // Déplacé vers la gauche (vers desk)
+        mirror.rotation.y = Math.PI / 2;
 
         mirror.traverse((child) => {
             if (child.isMesh) {
@@ -955,33 +914,21 @@ gltfLoader.load(
             }
         });
 
-        // --- FIX SCALE (small realistic size) ---
-        mirror.scale.set(0.015, 0.015, 0.01);
-
-        // --- FIX POSITION (wall mount) ---
-        mirror.position.set(-5.8, 0.3, 0.5);
-
-        // --- FIX ROTATION (face the room) ---
-        mirror.rotation.y = Math.PI / 2;
-
         scene.add(mirror);
+        console.log('✅ Magic mirror loaded');
     },
     undefined,
-    (error) => console.error(error)
+    (error) => console.error('❌ Error loading mirror:', error)
 );
 
-
-
-// Load Piano - positioned flat against the wall
+// === Piano (imported GLB) ===
 gltfLoader.load(
     '/models/the_storyteller_piano.glb',
     (gltf) => {
         const piano = gltf.scene;
-        // Position against the west wall, straight (not diagonal)
-        piano.position.set(-5.2, 0, -3);
-        piano.rotation.y = Math.PI / 2; // Face the room, back to the wall
-        // Smaller scale
-        piano.scale.set(0.35, 0.35, 0.35);
+        piano.position.set(-5.2, 0, -3.5);
+        piano.rotation.y = Math.PI / 2;
+        piano.scale.set(0.42, 0.42, 0.42); // Taille équilibrée
 
         piano.traverse((child) => {
             if (child.isMesh) {
@@ -991,91 +938,22 @@ gltfLoader.load(
         });
 
         scene.add(piano);
-        console.log('✅ Piano loaded at:', piano.position);
+        console.log('✅ Piano loaded');
 
-        // Subtle piano spotlight
         const pianoSpot = new THREE.SpotLight(0xffd8b1, 2.5, 6, Math.PI / 8);
-        pianoSpot.position.set(-5.2, 4, -3);
-        pianoSpot.target.position.set(-5.2, 0, -3);
+        pianoSpot.position.set(-5.2, 4, -3.5);
+        pianoSpot.target.position.set(-5.2, 0, -3.5);
         pianoSpot.castShadow = true;
         scene.add(pianoSpot, pianoSpot.target);
     },
-    (progress) => {
-        console.log('Piano loading:', (progress.loaded / progress.total * 100).toFixed(2) + '%');
-    },
-    (error) => {
-        console.error('❌ Error loading piano:', error);
-    }
+    undefined,
+    (error) => console.error('❌ Error loading piano:', error)
 );
-
-// Decorative Candelabras (visible baroque elements)
-function createCandelabra(x, y, z) {
-    const group = new THREE.Group();
-
-    // Base ornée
-    const base = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.18, 0.22, 0.35, 16),
-        new THREE.MeshStandardMaterial({
-            color: 0xd4af37,
-            metalness: 0.95,
-            roughness: 0.15
-        })
-    );
-    base.position.y = 0.175;
-    group.add(base);
-
-    // Central stem
-    const stem = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.04, 0.05, 0.7, 16),
-        new THREE.MeshStandardMaterial({
-            color: 0xb8860b,
-            metalness: 0.9,
-            roughness: 0.25
-        })
-    );
-    stem.position.y = 0.7;
-    group.add(stem);
-
-    // 3 candle holders
-    for (let i = 0; i < 3; i++) {
-        const angle = (i / 3) * Math.PI * 2;
-        const holder = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.03, 0.04, 0.18, 12),
-            new THREE.MeshStandardMaterial({ color: 0xfff8dc })
-        );
-        holder.position.set(Math.cos(angle) * 0.15, 1.05, Math.sin(angle) * 0.15);
-        group.add(holder);
-
-        // Flame
-        const flame = new THREE.Mesh(
-            new THREE.SphereGeometry(0.045, 8, 8),
-            new THREE.MeshStandardMaterial({
-                color: 0xffaa00,
-                emissive: 0xffaa00,
-                emissiveIntensity: 1.8
-            })
-        );
-        flame.position.set(Math.cos(angle) * 0.15, 1.18, Math.sin(angle) * 0.15);
-        group.add(flame);
-
-        // Candle light
-        const light = new THREE.PointLight(0xffaa66, 1.8, 4);
-        light.position.set(Math.cos(angle) * 0.15, 1.18, Math.sin(angle) * 0.15);
-        group.add(light);
-    }
-
-    group.position.set(x, y, z);
-    group.castShadow = true;
-    scene.add(group);
-}
-
-// Candelabras removed
 
 // === ROSE DES VENTS AU SOL (Compass Rose) ===
 function createCompassRose() {
     const compassGroup = new THREE.Group();
 
-    // Cercle principal
     const outerCircle = new THREE.Mesh(
         new THREE.RingGeometry(1.8, 2.0, 64),
         new THREE.MeshStandardMaterial({
@@ -1089,7 +967,6 @@ function createCompassRose() {
     outerCircle.position.y = 0.012;
     compassGroup.add(outerCircle);
 
-    // Cercle intérieur
     const innerCircle = new THREE.Mesh(
         new THREE.RingGeometry(0.8, 1.0, 64),
         new THREE.MeshStandardMaterial({
@@ -1103,7 +980,6 @@ function createCompassRose() {
     innerCircle.position.y = 0.012;
     compassGroup.add(innerCircle);
 
-    // Centre décoratif
     const center = new THREE.Mesh(
         new THREE.CircleGeometry(0.25, 32),
         new THREE.MeshStandardMaterial({
@@ -1117,7 +993,6 @@ function createCompassRose() {
     center.position.y = 0.013;
     compassGroup.add(center);
 
-    // Pointes de la rose des vents (8 directions)
     const directions = 8;
     for (let i = 0; i < directions; i++) {
         const angle = (i / directions) * Math.PI * 2;
@@ -1125,7 +1000,6 @@ function createCompassRose() {
         const length = isCardinal ? 1.7 : 1.3;
         const width = isCardinal ? 0.15 : 0.08;
 
-        // Pointe triangulaire
         const shape = new THREE.Shape();
         shape.moveTo(0, 0);
         shape.lineTo(-width, length * 0.3);
@@ -1148,7 +1022,6 @@ function createCompassRose() {
         compassGroup.add(point);
     }
 
-    // Lettres cardinales
     const cardinals = [
         { text: 'N', angle: 0 },
         { text: 'E', angle: Math.PI / 2 },
@@ -1197,7 +1070,6 @@ const chandelierGold = new THREE.MeshStandardMaterial({
     emissiveIntensity: 0.2
 });
 
-// Couronne supérieure
 const crown = new THREE.Mesh(
     new THREE.TorusGeometry(0.3, 0.05, 16, 24),
     chandelierGold
@@ -1206,7 +1078,6 @@ crown.rotation.x = Math.PI / 2;
 crown.position.y = 5.6;
 chandelierGroup.add(crown);
 
-// Chaîne décorative
 for (let i = 0; i < 8; i++) {
     const link = new THREE.Mesh(
         new THREE.TorusGeometry(0.04, 0.01, 8, 12),
@@ -1217,7 +1088,6 @@ for (let i = 0; i < 8; i++) {
     chandelierGroup.add(link);
 }
 
-// Corps principal du lustre
 const mainBody = new THREE.Mesh(
     new THREE.CylinderGeometry(0.2, 0.35, 0.5, 16),
     chandelierGold
@@ -1225,7 +1095,6 @@ const mainBody = new THREE.Mesh(
 mainBody.position.y = 5.3;
 chandelierGroup.add(mainBody);
 
-// Boule centrale ornée
 const centerBall = new THREE.Mesh(
     new THREE.SphereGeometry(0.18, 24, 24),
     chandelierGold
@@ -1233,7 +1102,6 @@ const centerBall = new THREE.Mesh(
 centerBall.position.y = 4.95;
 chandelierGroup.add(centerBall);
 
-// Bras du lustre avec bougies (2 niveaux)
 const armLevels = [
     { y: 5.1, radius: 0.5, arms: 6, scale: 1 },
     { y: 4.75, radius: 0.7, arms: 6, scale: 0.85 }
@@ -1243,7 +1111,6 @@ armLevels.forEach(level => {
     for (let i = 0; i < level.arms; i++) {
         const ang = (i / level.arms) * Math.PI * 2 + (level.y === 4.75 ? Math.PI / 6 : 0);
 
-        // Bras courbe
         const armGroup = new THREE.Group();
 
         const arm = new THREE.Mesh(
@@ -1254,7 +1121,6 @@ armLevels.forEach(level => {
         arm.position.x = level.radius * 0.6;
         armGroup.add(arm);
 
-        // Coupelle
         const cup = new THREE.Mesh(
             new THREE.CylinderGeometry(0.08, 0.06, 0.05, 12),
             chandelierGold
@@ -1262,7 +1128,6 @@ armLevels.forEach(level => {
         cup.position.set(level.radius, -0.05, 0);
         armGroup.add(cup);
 
-        // Bougie
         const candle = new THREE.Mesh(
             new THREE.CylinderGeometry(0.025, 0.03, 0.15, 12),
             new THREE.MeshStandardMaterial({ color: 0xfff8dc })
@@ -1270,7 +1135,6 @@ armLevels.forEach(level => {
         candle.position.set(level.radius, 0.05, 0);
         armGroup.add(candle);
 
-        // Flamme
         const flame = new THREE.Mesh(
             new THREE.SphereGeometry(0.04, 8, 8),
             new THREE.MeshStandardMaterial({
@@ -1290,7 +1154,6 @@ armLevels.forEach(level => {
     }
 });
 
-// Pendentif final
 const finalDrop = new THREE.Mesh(
     new THREE.ConeGeometry(0.08, 0.2, 16),
     new THREE.MeshStandardMaterial({
@@ -1305,7 +1168,6 @@ finalDrop.position.y = 4.65;
 finalDrop.rotation.x = Math.PI;
 chandelierGroup.add(finalDrop);
 
-// Cristaux pendants
 for (let i = 0; i < 8; i++) {
     const ang = (i / 8) * Math.PI * 2;
     const crystal = new THREE.Mesh(
@@ -1330,52 +1192,43 @@ for (let i = 0; i < 8; i++) {
 scene.add(chandelierGroup);
 
 // === Puzzle 2 Box (GearPuzzle) ===
-let puzzle3 = null; // Déclaration pour Puzzle 3
-let puzzle2 = null; // Will be initialized after clock loads
+let puzzle3 = null;
+let puzzle2 = null;
+let puzzle4 = null;
 
-// Function to initialize puzzle2 (called after clock model loads)
 function initPuzzle2() {
-    if (puzzle2) return; // Already initialized
+    if (puzzle2) return;
 
     puzzle2 = new GearPuzzle(scene, camera, renderer, puzzle1, {
         onSolved: (bookMesh) => {
             console.log('📖 Puzzle 2 solved – logbook ready!');
-
-            // Initialiser Puzzle 3 quand le livre apparaît
             if (bookMesh && !puzzle3) {
                 puzzle3 = new BookPuzzle(scene, camera, renderer, bookMesh, true);
-                console.log('📚 Book Puzzle created and opened IMMEDIATELY!');
+                console.log('📚 Book Puzzle created!');
             }
         }
     });
     console.log('✅ Puzzle 2 initialized');
 }
 
-// === Puzzle 4 - Door Lock ===
-const puzzle4 = new DoorLockPuzzle(scene, camera, renderer, door, keypad, {
-    code: '4619',
-    onUnlocked: () => {
-        console.log('🎉 ESCAPE SUCCESSFUL!');
+function initDoorPuzzle() {
+    if (puzzle4 || !door || !keypad) return;
 
-        const victoryDiv = document.createElement('div');
-        victoryDiv.style.position = 'fixed';
-        victoryDiv.style.top = '50%';
-        victoryDiv.style.left = '50%';
-        victoryDiv.style.transform = 'translate(-50%, -50%)';
-        victoryDiv.style.padding = '30px';
-        victoryDiv.style.background = 'rgba(0,0,0,0.95)';
-        victoryDiv.style.color = '#00ff00';
-        victoryDiv.style.fontSize = '32px';
-        victoryDiv.style.fontFamily = 'Georgia, serif';
-        victoryDiv.style.borderRadius = '15px';
-        victoryDiv.style.border = '3px solid #00ff00';
-        victoryDiv.style.zIndex = '5000';
-        victoryDiv.textContent = '🎉 YOU ESCAPED! 🎉';
-        document.body.appendChild(victoryDiv);
-    }
-});
+    puzzle4 = new DoorLockPuzzle(scene, camera, renderer, door, keypad, {
+        code: '4619',
+        onUnlocked: () => {
+            console.log('🎉 ESCAPE SUCCESSFUL!');
 
-console.log('✅ All puzzles initialized!');
+            const victoryDiv = document.createElement('div');
+            victoryDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);padding:30px;background:rgba(0,0,0,0.95);color:#00ff00;font-size:32px;font-family:Georgia,serif;border-radius:15px;border:3px solid #00ff00;z-index:5000;';
+            victoryDiv.textContent = '🎉 YOU ESCAPED! 🎉';
+            document.body.appendChild(victoryDiv);
+        }
+    });
+    console.log('✅ Puzzle 4 (Door Lock) initialized');
+}
+
+console.log('✅ Puzzle system ready!');
 
 // === Animation Loop ===
 const clock = new THREE.Clock();
@@ -1388,14 +1241,13 @@ function animate() {
 
     updateMovement();
 
-    // Enhanced baroque lighting effects
     chandelierLight.intensity = 6.5 + Math.sin(time * 2) * 0.9 + Math.sin(time * 5) * 0.3;
     fillLight.intensity = 1.8 + Math.sin(time * 1.5) * 0.2;
     accentLight.intensity = 2.5 + Math.sin(time * 3) * 0.4;
 
     updateHover();
     if (puzzle2) puzzle2.update(delta);
-    puzzle4.update(delta);
+    if (puzzle4) puzzle4.update(delta);
 
     renderer.render(scene, camera);
 }
