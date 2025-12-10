@@ -741,7 +741,52 @@ gltfLoader.load(
     (error) => console.error('❌ Error loading keypad:', error)
 );
 
-// === Grandfather Clock (imported GLB with custom hands) ===
+// === Tableau à droite de la porte (altarpiece) ===
+gltfLoader.load(
+    '/models/altarpiece_from_preetz_right_wing.glb',
+    (gltf) => {
+        const tableau = gltf.scene;
+
+        // 1) On remet la position/rotation à zéro pour travailler proprement
+        tableau.position.set(0, 0, 0);
+        tableau.rotation.set(0, 0, 0);
+
+        // 2) On mesure la taille ORIGINALE
+        const box = new THREE.Box3().setFromObject(tableau);
+        const size = box.getSize(new THREE.Vector3());
+        console.log("📏 Taille originale du tableau :", size);
+
+        // 3) On calcule un scale pour que la hauteur ≈ 2.4 unités
+        const desiredHeight = 2.4;
+        const scaleFactor = desiredHeight / size.y;
+        tableau.scale.setScalar(scaleFactor);
+        console.log("🔍 scaleFactor utilisé :", scaleFactor);
+
+        // 4) Après le scale, on recalcule la box et on recentre le pivot
+        const boxScaled = new THREE.Box3().setFromObject(tableau);
+        const center = boxScaled.getCenter(new THREE.Vector3());
+        tableau.position.sub(center); // on met le pivot au centre du modèle
+
+        // 5) Maintenant on place le tableau dans la pièce
+        // Mur nord : z ≈ -5.9, porte au centre (x ≈ 0), keypad à x ≈ 2.8
+        tableau.position.set(4.2, 2.4, -7.2); // à droite de la porte, un peu devant le mur
+
+        tableau.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
+
+        scene.add(tableau);
+        console.log('✅ Tableau (altarpiece) scaled & placed next to the door');
+    },
+    undefined,
+    (error) => console.error('❌ Error loading tableau:', error)
+);
+
+
+// === Grandfather Clock (imported GLB with original hands) ===
 const clockGroup = new THREE.Group();
 
 let hourHand = null;
@@ -752,36 +797,76 @@ gltfLoader.load(
     '/models/grandfather_clock.glb',
     (gltf) => {
         const clockModel = gltf.scene;
+
+        // même transform qu'avant
         clockModel.scale.set(2.2, 2.2, 2.2);
         clockModel.position.set(0, 2.2, 0);
 
         let hourHandNode = null;
         let minuteHandNode = null;
-        let handPinNode = null;
+        let clockFaceNode = null;
 
         clockModel.traverse((child) => {
             if (child.isMesh) {
                 child.castShadow = true;
                 child.receiveShadow = true;
             }
+
+            if (child.name === 'HourHand_GR')  hourHandNode  = child;
             if (child.name === 'MinuteHand_GR') minuteHandNode = child;
-            if (child.name === 'HourHand_GR') hourHandNode = child;
-            if (child.name === 'HandPin_GR') handPinNode = child;
+            if (child.name === 'ClockFace_GR')  clockFaceNode = child;
         });
 
-        if (hourHandNode && minuteHandNode && handPinNode) {
-            const pinPos = handPinNode.position.clone();
-            const hourOffset = hourHandNode.position.clone().sub(pinPos);
-            hourHandNode.position.copy(pinPos);
-            hourHandNode.children.forEach(child => child.position.add(hourOffset));
+        clockModel.updateWorldMatrix(true, true);
 
-            const minuteOffset = minuteHandNode.position.clone().sub(pinPos);
-            minuteHandNode.position.copy(pinPos);
-            minuteHandNode.children.forEach(child => child.position.add(minuteOffset));
+        if (clockFaceNode && hourHandNode && minuteHandNode) {
+            // 1) centre du cadran (en world)
+            const faceBox = new THREE.Box3().setFromObject(clockFaceNode);
+            const faceCenterWorld = new THREE.Vector3();
+            faceBox.getCenter(faceCenterWorld);
+            console.log('🎯 Centre cadran (world):', faceCenterWorld);
 
-            hourHand = hourHandNode;
-            minuteHand = minuteHandNode;
+            // 2) même point en local du clockModel
+            const faceCenterLocal = faceCenterWorld.clone();
+            clockModel.worldToLocal(faceCenterLocal);
+            console.log('🎯 Centre cadran (local clockModel):', faceCenterLocal);
+
+            // 3) pivots au centre du cercle
+            const hourPivot = new THREE.Object3D();
+            const minutePivot = new THREE.Object3D();
+            hourPivot.position.copy(faceCenterLocal);
+            minutePivot.position.copy(faceCenterLocal);
+
+            clockModel.add(hourPivot);
+            clockModel.add(minutePivot);
+
+            // helper pour vérifier
+            const axes = new THREE.AxesHelper(0.08);
+            hourPivot.add(axes);
+
+            // 4) re-parenter les aiguilles d’origine SANS les bouger visuellement
+            hourPivot.attach(hourHandNode);
+            minutePivot.attach(minuteHandNode);
+
+            // petit offset vers l'avant pour éviter le z-fighting avec le cadran
+            hourHandNode.position.z += 0.002;
+            minuteHandNode.position.z += 0.003;
+
+            // le puzzle fera tourner ces pivots
+            hourHand = hourPivot;
+            minuteHand = minutePivot;
+
+            console.log('✅ Aiguilles ORIGINALES centrées sur le cadran');
         } else {
+            console.error(
+                '❌ Parties manquantes – Hour:',
+                !!hourHandNode,
+                'Minute:',
+                !!minuteHandNode,
+                'ClockFace:',
+                !!clockFaceNode
+            );
+            // fallback si besoin
             hourHand = hourHandNode;
             minuteHand = minuteHandNode;
         }
@@ -789,13 +874,20 @@ gltfLoader.load(
         clockGroup.add(clockModel);
 
         if (hourHand && minuteHand) {
-            puzzle1 = new ClockPuzzle(scene, camera, renderer, clockGroup, hourHand, minuteHand);
-            console.log('✅ Puzzle 1 ready');
+            puzzle1 = new ClockPuzzle(
+                scene,
+                camera,
+                renderer,
+                clockGroup,
+                hourHand,
+                minuteHand
+            );
+            console.log('✅ Puzzle 1 ready avec aiguilles d’origine');
             initPuzzle2();
         }
     },
     undefined,
-    (error) => console.error('Error:', error)
+    (error) => console.error('Error loading clock:', error)
 );
 
 clockGroup.position.set(4.8, 0, -3.5);
