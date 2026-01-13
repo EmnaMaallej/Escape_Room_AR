@@ -841,8 +841,8 @@ gltfLoader.load(
             clockModel.add(minutePivot);
 
             // helper pour vérifier
-            const axes = new THREE.AxesHelper(0.08);
-            hourPivot.add(axes);
+            //const axes = new THREE.AxesHelper(0.08);
+            //hourPivot.add(axes);
 
             // 4) re-parenter les aiguilles d’origine SANS les bouger visuellement
             hourPivot.attach(hourHandNode);
