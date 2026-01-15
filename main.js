@@ -451,7 +451,7 @@ function makePaperMesh(textLines, options = {}) {
     ctx.font = 'italic 26px Georgia';
     ctx.fillText(sub, 48, 110);
 
-    ctx.fillStyle = '#222';
+    ctx.fillStyle = '#000000';
     ctx.font = '28px Georgia';
     let yy = 170;
     textLines.forEach((line) => {
@@ -492,11 +492,13 @@ function makePaperMesh(textLines, options = {}) {
 }
 
 const instructions = [
-    'When the world balances between sleep and waking,',
-    'the hands find the horizon hinted close by.',
-    'Shadows are longest as the light just begins to rise,',
-    'and the clock remembers its truest rhythm there.'
+    'The great clock knows symmetry.',
+    'When one hand reaches toward the heavens',
+    'and the other points to the depths below,',
+    'time stands in perfect opposition.',
+    'Only then does the mechanism accept the truth.'
 ];
+
 
 const paperTop = makePaperMesh(instructions, {
     title: 'ESCAPE PROTOCOL',
@@ -505,8 +507,9 @@ const paperTop = makePaperMesh(instructions, {
     w: 0.92,
     h: 0.68
 });
-paperTop.position.set(0, 0.008, 0);
+paperTop.position.set(0.2, 0.008, 0);
 paperTop.rotation.y = 0.02;
+paperTop.rotation.z = Math.PI/2;
 escapePapersGroup.add(paperTop);
 
 // Pencil
