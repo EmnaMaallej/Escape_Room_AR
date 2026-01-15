@@ -45,10 +45,10 @@ let pitch = 0;
 let isPointerLocked = false;
 
 renderer.domElement.addEventListener('click', () => {
-    if (!isPointerLocked) {
-        renderer.domElement.requestPointerLock();
-    }
+  if (puzzle3 && puzzle3.uiVisible) return; // don't steal clicks when book UI is open
+  if (!isPointerLocked) renderer.domElement.requestPointerLock();
 });
+
 
 document.addEventListener('pointerlockchange', () => {
     isPointerLocked = document.pointerLockElement === renderer.domElement;

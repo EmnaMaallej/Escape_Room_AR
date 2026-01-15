@@ -183,6 +183,17 @@ export class GearPuzzle {
         // Positionner le box sur le bureau
         this.group.position.set(0, 1.4, 0);
         this.scene.add(this.group);
+
+        // ===== CLICK HITBOX (big invisible collider) =====
+        const hitbox = new THREE.Mesh(
+            new THREE.BoxGeometry(1.2, 0.8, 0.9), // bigger than the box
+            new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 })
+        );
+
+        hitbox.position.set(0, 0.4, 0); // centered above the table
+        this.group.add(hitbox);
+        this.clickHitbox = hitbox;
+
     }
 
     // ================= EVENTS =================
