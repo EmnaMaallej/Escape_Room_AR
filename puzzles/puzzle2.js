@@ -7,7 +7,7 @@ export class GearPuzzle {
         this.camera = camera;
         this.renderer = renderer;
         this.clockPuzzle = clockPuzzle; // expects .hasGear boolean
-        this.onSolved = options.onSolved || (() => {});
+        this.onSolved = options.onSolved || (() => { });
 
         this.group = new THREE.Group();
 
@@ -306,28 +306,28 @@ export class GearPuzzle {
     }
 
     solve() {
-    this.solved = true;
-    this.showMessage('📖 Hidden latches release. The lockbox begins to open...');
-    this.opening = true;
-    this.openProgress = 0;
+        this.solved = true;
+        this.showMessage('📖 Hidden latches release. The lockbox begins to open...');
+        this.opening = true;
+        this.openProgress = 0;
 
-    // Livre / artefact à l’intérieur (posé dans le fond de la box)
-    const bookGeom = new THREE.BoxGeometry(0.4, 0.05, 0.24);
-    const bookMat = new THREE.MeshStandardMaterial({
-        color: 0x2b1b10,
-        roughness: 0.6
-    });
-    const book = new THREE.Mesh(bookGeom, bookMat);
+        // Livre / artefact à l’intérieur (posé dans le fond de la box)
+        const bookGeom = new THREE.BoxGeometry(0.4, 0.05, 0.24);
+        const bookMat = new THREE.MeshStandardMaterial({
+            color: 0x2b1b10,
+            roughness: 0.6
+        });
+        const book = new THREE.Mesh(bookGeom, bookMat);
 
-    // centre de la boîte : y très faible pour qu'il soit "dedans"
-    book.position.set(0, 0.04, 0);
-    book.visible = false;       // il apparaîtra pendant l’anim
-    book.castShadow = true;
-    this.group.add(book);
-    this.book = book;
+        // centre de la boîte : y très faible pour qu'il soit "dedans"
+        book.position.set(0, 0.04, 0);
+        book.visible = false;       // il apparaîtra pendant l’anim
+        book.castShadow = true;
+        this.group.add(book);
+        this.book = book;
 
-    if (this.onSolved) this.onSolved(this.book); // <-- on passe le livre à l'ext
-}
+        if (this.onSolved) this.onSolved(this.book); // <-- on passe le livre à l'ext
+    }
 
 
     // ================= UPDATE =================

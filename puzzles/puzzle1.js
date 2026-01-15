@@ -7,13 +7,11 @@ export class ClockPuzzle {
         this.renderer = renderer;
         this.clockGroup = clockGroup;
 
-        // Ici hourHand / minuteHand = pivots (Object3D) ou meshes
         this.hourHand = hourHand;
         this.minuteHand = minuteHand;
 
         this.solved = false;
         this.selectedHand = null;
-        this.hasInteracted = false;
 
         this.gear = null;
         this.gearLight = null;
@@ -23,9 +21,10 @@ export class ClockPuzzle {
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
 
-        // rotation de référence (position initiale = "12h")
-        this.baseHourZ = 0;
-        this.baseMinuteZ = 0;
+        // ANGLES CIBLES pour 6:00
+        this.TARGET_HOUR_DEG = 60;
+        this.TARGET_MINUTE_DEG = 135;
+        this.tolerance = 15;
 
         this.init();
     }
@@ -34,14 +33,17 @@ export class ClockPuzzle {
         this.createStickyNote();
         this.setupEventListeners();
 
-        // IMPORTANT : enregistrer l'orientation initiale comme base (12h)
         this.baseHourZ = this.hourHand.rotation.z;
         this.baseMinuteZ = this.minuteHand.rotation.z;
 
-        console.log('Puzzle 1 – Clock Alignment activated.');
-        console.log('   - Press 1 to select hour hand, 2 for minute hand');
-        console.log('   - Use ← → or 4 / 6 to rotate.');
-        console.log('   - Goal: 6:00 (hour on 6, minute on 12).');
+        console.log('✅ Clock Puzzle initialized');
+        console.log('🎯 Goal: Align clock to 6:00');
+        console.log('🎮 Click hands to select, use ← → to rotate');
+
+        // Vérification AUTOMATIQUE toutes les 200ms
+        this.checkInterval = setInterval(() => {
+            this.autoCheck();
+        }, 200);
     }
 
     createStickyNote() {
@@ -90,36 +92,53 @@ export class ClockPuzzle {
         this.scene.add(stickyNote);
     }
 
-    // ✅ Détection fiable par "slots" 0..11 (30°)
-    checkClockTime() {
-        if (this.solved || !this.hasInteracted) return;
+    // VÉRIFICATION AUTOMATIQUE
+    autoCheck() {
+        if (this.solved) {
+            clearInterval(this.checkInterval);
+            return;
+        }
 
-        // 1) angles relatifs par rapport à la position de base
-        let hourDeg = THREE.MathUtils.radToDeg(this.hourHand.rotation.z - this.baseHourZ);
-        let minuteDeg = THREE.MathUtils.radToDeg(this.minuteHand.rotation.z - this.baseMinuteZ);
+        let hourRotRad = this.hourHand.rotation.z - this.baseHourZ;
+        let minuteRotRad = this.minuteHand.rotation.z - this.baseMinuteZ;
 
-        // 2) normalisation 0–360
-        hourDeg = ((hourDeg % 360) + 360) % 360;
-        minuteDeg = ((minuteDeg % 360) + 360) % 360;
+        hourRotRad = this.normalizeAngle(hourRotRad);
+        minuteRotRad = this.normalizeAngle(minuteRotRad);
 
-        // 3) quantification en crans de 30° (12 positions)
-        const hourSlot = Math.round(hourDeg / 30) % 12;       // 0..11
-        const minuteSlot = Math.round(minuteDeg / 30) % 12;   // 0..11
+        const hourDeg = THREE.MathUtils.radToDeg(hourRotRad);
+        const minuteDeg = THREE.MathUtils.radToDeg(minuteRotRad);
 
-        console.log(`HourDeg=${hourDeg.toFixed(1)}° slot=${hourSlot} | MinuteDeg=${minuteDeg.toFixed(1)}° slot=${minuteSlot}`);
+        const hourMatch = this.isAngleClose(hourDeg, this.TARGET_HOUR_DEG, this.tolerance);
+        const minuteMatch = this.isAngleClose(minuteDeg, this.TARGET_MINUTE_DEG, this.tolerance);
 
-        // 4) Condition exacte: 6h00 => heure sur 6, minute sur 12
-        if (hourSlot === 6 && minuteSlot === 0) {
+        if (hourMatch && minuteMatch) {
+            console.log('✅ 6:00 ALIGNED! Gear releasing...');
+            console.log(`   Hour: ${hourDeg.toFixed(1)}° | Minute: ${minuteDeg.toFixed(1)}°`);
             this.solvePuzzle();
         }
+    }
+
+    normalizeAngle(angle) {
+        while (angle > Math.PI) angle -= Math.PI * 2;
+        while (angle < -Math.PI) angle += Math.PI * 2;
+        return angle;
+    }
+
+    isAngleClose(angle1, angle2, tolerance) {
+        const diff = Math.abs(angle1 - angle2);
+        return diff <= tolerance;
     }
 
     solvePuzzle() {
         if (this.solved) return;
         this.solved = true;
 
-        console.log('✅ Puzzle 1 solved – golden gear released.');
+        clearInterval(this.checkInterval);
 
+        console.log('🎉 Puzzle 1 solved!');
+        this.showMessage('⚙️ The clock chimes! A mechanism releases...');
+
+        // Créer le gear doré - Position de départ DEVANT l'horloge
         const gearGeom = new THREE.CylinderGeometry(0.3, 0.3, 0.12, 16);
         const gearMat = new THREE.MeshStandardMaterial({
             color: 0xFFD700,
@@ -130,7 +149,8 @@ export class ClockPuzzle {
         });
 
         this.gear = new THREE.Mesh(gearGeom, gearMat);
-        this.gear.position.set(5.0, 3.4, -3.5);
+        // Position de départ : devant l'horloge en hauteur
+        this.gear.position.set(4.2, 3.4, -3.0); // Plus vers le joueur (z=-3.0 au lieu de -3.5)
         this.gear.rotation.x = Math.PI / 2;
         this.gear.castShadow = true;
         this.scene.add(this.gear);
@@ -140,10 +160,11 @@ export class ClockPuzzle {
         this.scene.add(this.gearLight);
 
         this.floorLight = new THREE.SpotLight(0xFFAA00, 3.0, 8, Math.PI / 6);
-        this.floorLight.position.set(5.0, 2.0, -3.5);
-        this.floorLight.target.position.set(5.0, 0.0, -3.5);
+        this.floorLight.position.set(4.2, 2.0, -3.0);
+        this.floorLight.target.position.set(4.2, 0.0, -3.0);
         this.scene.add(this.floorLight, this.floorLight.target);
 
+        // Animation de chute
         let fallSpeed = 0;
         const fallInterval = setInterval(() => {
             if (!this.gear) {
@@ -158,8 +179,9 @@ export class ClockPuzzle {
             this.gearLight.position.copy(this.gear.position);
             this.floorLight.target.position.set(this.gear.position.x, 0, this.gear.position.z);
 
-            if (this.gear.position.y <= 0.2) {
-                this.gear.position.y = 0.2;
+            // Le gear s'arrête AU SOL (y=0.15 pour être bien visible)
+            if (this.gear.position.y <= 0.15) {
+                this.gear.position.y = 0.15;
                 clearInterval(fallInterval);
 
                 this.showMessage('⚙️ A golden gear has fallen. Click it to pick it up.');
@@ -180,21 +202,33 @@ export class ClockPuzzle {
     }
 
     showMessage(text) {
+        // Supprimer l'ancien message s'il existe
+        const oldMsg = document.getElementById('clock-message');
+        if (oldMsg) oldMsg.remove();
+
         const div = document.createElement('div');
-        div.style.position = 'fixed';
-        div.style.top = '20px';
-        div.style.left = '50%';
-        div.style.transform = 'translateX(-50%)';
-        div.style.backgroundColor = 'rgba(0,0,0,0.85)';
-        div.style.color = '#00ffff';
-        div.style.padding = '10px 22px';
-        div.style.borderRadius = '8px';
-        div.style.fontFamily = 'Georgia, serif';
-        div.style.fontSize = '16px';
-        div.style.zIndex = '2000';
+        div.id = 'clock-message';
+        div.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 50, 100, 0.95);
+            color: #00ffff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: 2px solid #00ffff;
+            font-family: Georgia, serif;
+            font-size: 16px;
+            z-index: 5000;
+            box-shadow: 0 0 20px rgba(0,255,255,0.6);
+            pointer-events: none;
+        `;
         div.textContent = text;
         document.body.appendChild(div);
-        setTimeout(() => div.remove(), 3200);
+        setTimeout(() => {
+            if (div.parentNode) div.remove();
+        }, 2500);
     }
 
     onClockClick = (event) => {
@@ -236,8 +270,8 @@ export class ClockPuzzle {
 
         if (!intersects.length) return;
 
-        console.log('⚙️ Golden gear collected for the next mechanism.');
-        this.showMessage('⚙️ Gear collected. It might fit a waiting mechanism.');
+        console.log('⚙️ Golden gear collected!');
+        this.showMessage('⚙️ Gear collected. It might fit somewhere...');
 
         this.scene.remove(this.gear);
         if (this.gearLight) this.scene.remove(this.gearLight);
@@ -246,7 +280,6 @@ export class ClockPuzzle {
         this.gear = null;
         this.gearLight = null;
         this.floorLight = null;
-
         this.hasGear = true;
     };
 
@@ -255,32 +288,33 @@ export class ClockPuzzle {
 
         if (event.key === '1') {
             this.selectedHand = 'hour';
-            this.showMessage('🕐 Hour hand selected. Use ← → or 4 / 6.');
+            this.showMessage('🕐 Hour hand selected.');
             return;
         }
         if (event.key === '2') {
             this.selectedHand = 'minute';
-            this.showMessage('🕐 Minute hand selected. Use ← → or 4 / 6.');
+            this.showMessage('🕐 Minute hand selected.');
             return;
         }
 
         if (!this.selectedHand) return;
 
         const rotationSpeed = Math.PI / 12; // 15°
-        this.hasInteracted = true;
 
         if (event.key === '6' || event.key === 'ArrowRight') {
-            if (this.selectedHand === 'hour') this.hourHand.rotation.z -= rotationSpeed;
-            else this.minuteHand.rotation.z -= rotationSpeed;
-
-            this.checkClockTime();
+            if (this.selectedHand === 'hour') {
+                this.hourHand.rotation.z -= rotationSpeed;
+            } else {
+                this.minuteHand.rotation.z -= rotationSpeed;
+            }
             event.preventDefault();
             event.stopPropagation();
         } else if (event.key === '4' || event.key === 'ArrowLeft') {
-            if (this.selectedHand === 'hour') this.hourHand.rotation.z += rotationSpeed;
-            else this.minuteHand.rotation.z += rotationSpeed;
-
-            this.checkClockTime();
+            if (this.selectedHand === 'hour') {
+                this.hourHand.rotation.z += rotationSpeed;
+            } else {
+                this.minuteHand.rotation.z += rotationSpeed;
+            }
             event.preventDefault();
             event.stopPropagation();
         } else if (event.key === 'Escape' || event.key === 'e' || event.key === 'E') {
@@ -309,6 +343,7 @@ export class ClockPuzzle {
         this.renderer.domElement.removeEventListener('click', this.onGearClick);
         window.removeEventListener('keydown', this.onKeyDown);
 
+        if (this.checkInterval) clearInterval(this.checkInterval);
         if (this.gearLight) this.scene.remove(this.gearLight);
         if (this.floorLight) this.scene.remove(this.floorLight);
     }

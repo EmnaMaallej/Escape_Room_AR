@@ -812,9 +812,9 @@ gltfLoader.load(
                 child.receiveShadow = true;
             }
 
-            if (child.name === 'HourHand_GR')  hourHandNode  = child;
+            if (child.name === 'HourHand_GR') hourHandNode = child;
             if (child.name === 'MinuteHand_GR') minuteHandNode = child;
-            if (child.name === 'ClockFace_GR')  clockFaceNode = child;
+            if (child.name === 'ClockFace_GR') clockFaceNode = child;
         });
 
         clockModel.updateWorldMatrix(true, true);
@@ -966,9 +966,9 @@ gltfLoader.load(
     '/models/antique_desk.glb',
     (gltf) => {
         const antiqueDesk = gltf.scene;
-        antiqueDesk.position.set(-5, 1.5, 4);
+        antiqueDesk.position.set(-5, 1.5, 3.7);
         antiqueDesk.rotation.y = Math.PI / 2;
-        antiqueDesk.scale.set(1.8, 1.3, 0.7); // Taille équilibrée
+        antiqueDesk.scale.set(1.8, 1.6, 1.3); // Taille équilibrée
 
         antiqueDesk.traverse((child) => {
             if (child.isMesh) {
@@ -1349,4 +1349,4 @@ window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-});
+}); 
