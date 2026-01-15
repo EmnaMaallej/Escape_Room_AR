@@ -181,7 +181,7 @@ export class GearPuzzle {
         lid.add(markR);
 
         // Positionner le box sur le bureau
-        this.group.position.set(-4.0, 1.0, 5.0);
+        this.group.position.set(0, 1.4, 0);
         this.scene.add(this.group);
     }
 
