@@ -10,7 +10,7 @@ export class DoorLockPuzzle {
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
 
-        this.secretCode = options.code || '4619';
+        this.secretCode = options.code || '4315';
         this.inputCode = '';
         this.solved = false;
         this.opening = false;

@@ -12,15 +12,15 @@ export class BookPuzzle {
     this.mouse = new THREE.Vector2();
 
     this.pages = [
-      'LOGBOOK — A5\n\n[Press E to open/close this book]\n[Press ESC to close]\n\nTime has frozen in this chamber.\nOnly those who understand its secrets\nmay find the way forward.',
+      'LOGBOOK - A5\n\n[Press E to open/close this book]\n[Press ESC to close]\n\nTime has frozen in this chamber.\nOnly those who understand its secrets\nmay find the way forward.',
 
-      'Clue I — The First Digit\n\nFour sentinels of light stand watch\nat the corners where two walls meet.\nCount them carefully—\neach burns eternal against the encroaching dark.\n\nTheir number is your first key.',
+      'Clue I - Victorian Bookshelf\n\nIn the dwelling of ancient whispers,\nKnowledge stands as eternal keeper.\nWhere light and shadow wed as one,\nSeek what separates the tales begun.\n\nBetween each realm of paper and ink,\nA silent void exists, I think.\nThese invisible borders count and tell,\nThe stories that within them dwell.',
 
-      'Clue II — The Second Digit\n\nThe great clock knows balance.\nWhen both hands point to opposite horizons,\none reaches toward dawn, the other toward dusk.\n\nWhat hour divides the day in perfect symmetry?\nThat number is your second key.',
+      'Clue II - The Black Beast\n\nThe black beast guards an ancient art,\nNot in its teeth, nor in its heart.\nDescend your gaze to where shadows creep,\nWhere silent servants endless vigil keep.\n\nThey do not speak, they do not sing,\nYet beneath pressure, they change everything.\nCount the unseen masters of the sound,\nHidden where darkness meets the ground.',
 
-      'Clue III — The Third Digit\n\nFour walls imprison you.\nThree puzzles challenge your wit.\nTwo hands once moved to unlock the first gate.\n\nBut answer this final truth:\nWhen all mechanisms yield to your cunning,\nwhen all riddles bow before your mind,\nhow many thresholds lead to freedom beyond?\n\nHow many doors separate captivity from liberty?\nThe path is narrow, singular, and absolute.',
+      'Clue III - Mirror of Vanity\n\nBefore the gilded glass of vanity\'s throne,\nTwo souls gaze, yet stand alone.\nOne is real, one is deceived,\nBut only one has truly lived and breathed.\n\nIn this dance of light and lies,\nHow many walk beyond the guise?\nCount not the reflections that you see,\nBut those who hold true memory.',
 
-      'Clue IV — The Fourth Digit\n\nFour Roman sentinels mark the cardinal points:\nXII commands the north, VI the south,\nIII stands guard to the east, IX to the west.\n\nThe vertical axis holds XII and VI.\nThe horizontal axis bears III and IX.\n\nSum the numbers on the axis of dawn and dusk,\nthen subtract the number that faces the sunrise.\n\nWhat remains is your final answer.\n\nCODE: _ _ _ _'
+      'Clue IV - The Sacred Assembly\n\nTen holy souls in their eternal stance,\nFrozen in their sacred trance.\nSome turn toward where the sun is born,\nWhere light breaks through the veil of morn.\n\nThese seekers of the eastern glow,\nThe ones who watch the daybreak show-\nTheir gaze is fixed on heaven\'s door,\nCount them well, and nothing more.\n\n===============================\n'
     ];
 
     this.currentPage = 0;
@@ -166,7 +166,7 @@ export class BookPuzzle {
     window.addEventListener('keydown', this.onKeyDown);
 
     // Optional: keep click handler attached but do nothing (prevents old bugs)
-    this.onClick = () => {};
+    this.onClick = () => { };
     this.renderer.domElement.addEventListener('click', this.onClick);
   }
 
