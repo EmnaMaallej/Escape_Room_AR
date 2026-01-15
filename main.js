@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 
 import { ClockPuzzle } from './puzzles/puzzle1.js';
 import { GearPuzzle } from './puzzles/puzzle2.js';
@@ -26,7 +27,34 @@ camera.rotation.order = 'YXZ';
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
+renderer.xr.enabled = true;
 document.body.appendChild(renderer.domElement);
+
+const sessionInit = {
+    optionalFeatures: ['local-floor', 'bounded-floor', 'dom-overlay'],
+    domOverlay: { root: document.getElementById('overlay-container') }
+};
+document.body.appendChild(VRButton.createButton(renderer, sessionInit));
+
+// === Custom Exit VR Button Logic ===
+const exitVrBtn = document.getElementById('exit-vr-btn');
+if (exitVrBtn) {
+    exitVrBtn.addEventListener('click', () => {
+        if (renderer.xr.isPresenting) {
+            renderer.xr.getSession().end();
+        }
+    });
+
+    renderer.xr.addEventListener('sessionstart', () => {
+        console.log('👓 VR Session Started - Showing Exit Button');
+        exitVrBtn.style.display = 'block';
+    });
+
+    renderer.xr.addEventListener('sessionend', () => {
+        console.log('🛑 VR Session Ended - Hiding Exit Button');
+        exitVrBtn.style.display = 'none';
+    });
+}
 
 // === FPS Controls ===
 const moveSpeed = 0.08;
@@ -1046,11 +1074,13 @@ const clock = new THREE.Clock();
 let time = 0;
 
 function animate() {
-    requestAnimationFrame(animate);
+    // requestAnimationFrame(animate); // Removed for WebXR
     const delta = clock.getDelta();
     time += delta;
 
-    updateMovement();
+    if (!renderer.xr.isPresenting) {
+        updateMovement();
+    }
 
     chandelierLight.intensity = 6.5 + Math.sin(time * 2) * 0.9 + Math.sin(time * 5) * 0.3;
     fillLight.intensity = 1.8 + Math.sin(time * 1.5) * 0.2;
@@ -1062,7 +1092,8 @@ function animate() {
 
     renderer.render(scene, camera);
 }
-animate();
+// animate();
+renderer.setAnimationLoop(animate);
 
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
