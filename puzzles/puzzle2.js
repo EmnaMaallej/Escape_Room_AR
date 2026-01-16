@@ -2,12 +2,13 @@
 import * as THREE from 'three';
 
 export class GearPuzzle {
-    constructor(scene, camera, renderer, clockPuzzle, options = {}) {
+    constructor(scene, camera, renderer, clockPuzzle, soundManager = null, options = {}) {
         this.scene = scene;
         this.camera = camera;
         this.renderer = renderer;
         this.clockPuzzle = clockPuzzle; // expects .hasGear boolean
         this.onSolved = options.onSolved || (() => { });
+        this.soundManager = soundManager;
 
         this.group = new THREE.Group();
 
@@ -268,6 +269,11 @@ export class GearPuzzle {
             this.gearPlaced = true;
             this.clockPuzzle.hasGear = false; // consommée
 
+            // Play gear placed sound
+            if (this.soundManager) {
+                this.soundManager.playGearPlaced();
+            }
+
             this.showMessage('⚙️ The cog clicks into place. The lock hums softly.');
             this.checkSolved();
         } else {
@@ -292,6 +298,11 @@ export class GearPuzzle {
             return;
         }
         this.leftState = this.leftState ? 0 : 1;
+
+        // Play dial turn sound
+        if (this.soundManager) {
+            this.soundManager.playDialTurn();
+        }
         this.updateDialVisuals();
         this.checkSolved();
     }
@@ -302,6 +313,11 @@ export class GearPuzzle {
             return;
         }
         this.rightState = this.rightState ? 0 : 1;
+
+        // Play dial turn sound
+        if (this.soundManager) {
+            this.soundManager.playDialTurn();
+        }
         this.updateDialVisuals();
         this.checkSolved();
     }
@@ -318,6 +334,11 @@ export class GearPuzzle {
 
     solve() {
         this.solved = true;
+
+        // Play unlock sound
+        if (this.soundManager) {
+            this.soundManager.playBoxUnlock();
+        }
         this.showMessage('📖 Hidden latches release. The lockbox begins to open...');
         this.opening = true;
         this.openProgress = 0;

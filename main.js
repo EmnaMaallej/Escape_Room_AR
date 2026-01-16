@@ -6,6 +6,7 @@ import { ClockPuzzle } from './puzzles/puzzle1.js';
 import { GearPuzzle } from './puzzles/puzzle2.js';
 import { BookPuzzle } from './puzzles/puzzle3.js';
 import { DoorLockPuzzle } from './puzzles/lock.js';
+import { SoundManager } from './soundEffects_WebSpeech.js';
 
 
 
@@ -35,6 +36,13 @@ const sessionInit = {
     domOverlay: { root: document.getElementById('overlay-container') }
 };
 document.body.appendChild(VRButton.createButton(renderer, sessionInit));
+
+// === Sound Manager ===
+const soundManager = new SoundManager();
+console.log('✅ Sound Manager initialized');
+let gameStarted = false;  // Track if game has started
+console.log('💡 Move to start the game!');
+
 
 // === Custom Exit VR Button Logic ===
 const exitVrBtn = document.getElementById('exit-vr-btn');
@@ -73,8 +81,8 @@ let pitch = 0;
 let isPointerLocked = false;
 
 renderer.domElement.addEventListener('click', () => {
-  if (puzzle3 && puzzle3.uiVisible) return; // don't steal clicks when book UI is open
-  if (!isPointerLocked) renderer.domElement.requestPointerLock();
+    if (puzzle3 && puzzle3.uiVisible) return; // don't steal clicks when book UI is open
+    if (!isPointerLocked) renderer.domElement.requestPointerLock();
 });
 
 
@@ -164,6 +172,13 @@ function updateMovement() {
     camera.position.x = Math.max(-5.5, Math.min(5.5, camera.position.x));
     camera.position.z = Math.max(-5.5, Math.min(5.5, camera.position.z));
     camera.position.y = 2.2;
+
+    // Start game on first movement
+    if (dir.length() > 0 && !gameStarted) {
+        gameStarted = true;
+        console.log('🎮 Game started!');
+        soundManager.playWakeUpSequence();
+    }
 }
 
 console.log('✅ FPS controls ready');
@@ -509,7 +524,7 @@ const paperTop = makePaperMesh(instructions, {
 });
 paperTop.position.set(0.2, 0.008, 0);
 paperTop.rotation.y = 0.02;
-paperTop.rotation.z = Math.PI/2;
+paperTop.rotation.z = Math.PI / 2;
 escapePapersGroup.add(paperTop);
 
 // Pencil
@@ -704,7 +719,8 @@ gltfLoader.load(
                 renderer,
                 clockGroup,
                 hourHand,
-                minuteHand
+                minuteHand,
+                soundManager
             );
             console.log('✅ Puzzle 1 ready avec aiguilles d’origine');
             initPuzzle2();
@@ -1039,12 +1055,14 @@ let puzzle4 = null;
 function initPuzzle2() {
     if (puzzle2) return;
 
-    puzzle2 = new GearPuzzle(scene, camera, renderer, puzzle1, {
+    puzzle2 = new GearPuzzle(scene, camera, renderer, puzzle1, soundManager, {
         onSolved: (bookMesh) => {
             console.log('📖 Puzzle 2 solved – logbook ready!');
+
+            // Play gear fall sound + voice
             if (bookMesh && !puzzle3) {
-                puzzle3 = new BookPuzzle(scene, camera, renderer, bookMesh, true);
                 console.log('📚 Book Puzzle created!');
+                puzzle3 = new BookPuzzle(scene, camera, renderer, bookMesh, true, soundManager);
             }
         }
     });
@@ -1057,8 +1075,12 @@ function initDoorPuzzle() {
     const keypadPosition = { x: 2.8, y: 2, z: -5.85 };
 
     puzzle4 = new DoorLockPuzzle(scene, camera, renderer, door, keypadPosition, {
-        code: '4619',
+        code: '4315',
+        soundManager: soundManager,
         onUnlocked: () => {
+
+            // Play victory sound
+            soundManager.victory();
             console.log('🎉 ESCAPE SUCCESSFUL!');
 
             const victoryDiv = document.createElement('div');

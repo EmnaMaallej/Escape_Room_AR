@@ -16,6 +16,7 @@ export class DoorLockPuzzle {
         this.opening = false;
         this.openProgress = 0;
 
+        this.soundManager = options.soundManager;
         this.onUnlocked = options.onUnlocked || (() => { });
 
         // Create interactive 3D pin pad
@@ -274,6 +275,9 @@ export class DoorLockPuzzle {
             const number = clickedButton.userData.number;
 
             if (number !== undefined) {
+                // PREVENT pointer lock and camera movement
+                event.stopPropagation();
+                event.preventDefault();
                 // Visual feedback - button press
                 clickedButton.position.z = 0.02;
                 setTimeout(() => {
@@ -288,6 +292,11 @@ export class DoorLockPuzzle {
     pressDigit(digit) {
         if (this.inputCode.length >= 4) return;
 
+
+        // Play click sound
+        if (this.soundManager) {
+            this.soundManager.playPinClick();
+        }
         this.inputCode += digit.toString();
         console.log('Entered:', this.inputCode);
         this.updateScreenDisplay();
@@ -300,6 +309,11 @@ export class DoorLockPuzzle {
 
     validateCode() {
         if (this.inputCode === this.secretCode) {
+
+            // Play success sound
+            if (this.soundManager) {
+                this.soundManager.playPinSuccess();
+            }
             this.solved = true;
             this.opening = true;
             this.openProgress = 0;
@@ -311,6 +325,11 @@ export class DoorLockPuzzle {
             }, 1500);
         } else {
             console.log('❌ Wrong code');
+
+            // Play error sound
+            if (this.soundManager) {
+                this.soundManager.playPinError();
+            }
             this.showErrorScreen();
         }
     }

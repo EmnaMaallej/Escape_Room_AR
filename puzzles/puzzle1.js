@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 
 export class ClockPuzzle {
-    constructor(scene, camera, renderer, clockGroup, hourHand, minuteHand) {
+    constructor(scene, camera, renderer, clockGroup, hourHand, minuteHand, soundManager = null) {
         this.scene = scene;
         this.camera = camera;
         this.renderer = renderer;
         this.clockGroup = clockGroup;
+        this.soundManager = soundManager;
 
         this.hourHand = hourHand;
         this.minuteHand = minuteHand;
@@ -183,6 +184,16 @@ export class ClockPuzzle {
             if (this.gear.position.y <= 0.15) {
                 this.gear.position.y = 0.15;
                 clearInterval(fallInterval);
+
+                // Play gear fall sound
+                if (this.soundManager) {
+                    this.soundManager.playGearFall();
+                }
+                setTimeout(() => {
+                    if (this.soundManager) {
+                        this.soundManager.playPuzzleSolved();
+                    }
+                }, 1000);
 
                 this.showMessage('⚙️ A golden gear has fallen. Click it to pick it up.');
 

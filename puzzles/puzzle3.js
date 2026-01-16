@@ -2,11 +2,12 @@
 import * as THREE from 'three';
 
 export class BookPuzzle {
-  constructor(scene, camera, renderer, bookMesh, autoOpen = false) {
+  constructor(scene, camera, renderer, bookMesh, autoOpen = false, soundManager = null) {
     this.scene = scene;
     this.camera = camera;
     this.renderer = renderer;
     this.bookMesh = bookMesh;
+    this.soundManager = soundManager;
 
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
@@ -20,7 +21,7 @@ export class BookPuzzle {
 
       'Clue III - Mirror of Vanity\n\nBefore the gilded glass of vanity\'s throne,\nTwo souls gaze, yet stand alone.\nOne is real, one is deceived,\nBut only one has truly lived and breathed.\n\nIn this dance of light and lies,\nHow many walk beyond the guise?\nCount not the reflections that you see,\nBut those who hold true memory.',
 
-      'Clue IV - The Sacred Assembly\n\nTen holy souls in their eternal stance,\nFrozen in their sacred trance.\nSome turn toward where the sun is born,\nWhere light breaks through the veil of morn.\n\nThese seekers of the eastern glow,\nThe ones who watch the daybreak show-\nTheir gaze is fixed on heaven\'s door,\nCount them well, and nothing more.\n\n===============================\n'
+      'Clue IV - The Sacred Assembly\n\nTen holy souls in their eternal stance,\nFrozen in their sacred trance.\nSome turn toward where the sun is born,\nWhere light breaks through the veil of morn.\n\nThese seekers of the eastern glow,\nThe ones who watch the daybreak show-\nTheir gaze is fixed on heaven\'s door,\nCount them well, and nothing more.\n\n===============================\nFINAL CODE: 4 - 3 - 1 - 5\n==============================='
     ];
 
     this.currentPage = 0;
@@ -131,6 +132,11 @@ export class BookPuzzle {
   showUI() {
     this.uiVisible = true;
     this.panel.style.display = 'block';
+
+    // Play book open sound every time
+    if (this.soundManager) {
+      this.soundManager.playBookOpen();
+    }
   }
 
   hideUI() {
